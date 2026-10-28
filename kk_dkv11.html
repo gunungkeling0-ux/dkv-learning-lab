@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Videography & Short Film Open Lab - SMKN 3 Kuningan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        film: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#030712'
+                        },
+                        amberGold: '#f59e0b',
+                        emeraldNeon: '#10b981',
+                        roseCine: '#f43f5e'
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-nav {
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030712;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0284c7;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-sky-500 selection:text-white">
+
+    <!-- GENERAL NOTIFICATION MODAL -->
+    <div id="notice-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card max-w-sm w-full p-5 rounded-2xl text-center space-y-4 border border-slate-700">
+            <div id="notice-icon" class="text-4xl text-sky-400">
+                <i class="fa-solid fa-circle-info"></i>
+            </div>
+            <h4 id="notice-title" class="text-lg font-bold text-white">Notifikasi</h4>
+            <p id="notice-msg" class="text-xs text-slate-300 leading-relaxed"></p>
+            <button onclick="closeNotice()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg transition-all">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- ADMIN AUTHENTICATION MODAL -->
+    <div id="admin-auth-modal" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card max-w-md w-full p-6 rounded-2xl space-y-4 border border-rose-500/30">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-400 mx-auto flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">Akses Terkunci: Control Admin</h3>
+                <p class="text-xs text-slate-400">Masukkan kata sandi Administrator untuk mengelola data sistem dan backup.</p>
+            </div>
+
+            <form onsubmit="verifyAdminPassword(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Kata Sandi Admin</label>
+                    <input type="password" id="admin-pass-input" required placeholder="Masukkan kata sandi..." class="w-full bg-slate-900 border border-slate-700 text-white text-xs rounded-xl p-3 focus:border-rose-500 outline-none">
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeAdminAuthModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-all">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-rose-600/30 transition-all">
+                        Verifikasi
+                    </button>
+                </div>
+            </form>
+            <p class="text-[10px] text-slate-500 text-center font-mono">Default Kata Sandi: <span class="text-rose-400">admin123</span></p>
+        </div>
+    </div>
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 glass-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand & Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/20">
+                    <i class="fa-solid fa-film text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-extrabold text-white tracking-wide flex items-center gap-2">
+                        VIDEOGRAPHY OPEN LAB <span class="px-2 py-0.5 text-[10px] bg-emerald-500/20 text-emerald-400 font-mono rounded border border-emerald-500/30">BEBAS AKSES</span>
+                    </h1>
+                    <p class="text-[10px] text-slate-400">Media Pembelajaran Interaktif Sinematografi & Film Pendek - SMKN 3 Kuningan</p>
+                </div>
+            </div>
+
+            <!-- Desktop Nav Items -->
+            <nav class="hidden lg:flex items-center space-x-1 text-xs font-semibold">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="px-3 py-2 rounded-lg transition-all flex items-center gap-2 text-sky-400 bg-sky-500/10">
+                    <i class="fa-solid fa-house"></i> Beranda
+                </button>
+                <button onclick="switchTab('curriculum')" id="nav-curriculum" class="px-3 py-2 rounded-lg transition-all flex items-center gap-2 text-slate-300 hover:bg-slate-800">
+                    <i class="fa-solid fa-map-location-dot"></i> Peta Kurikulum
+                </button>
+                <button onclick="switchTab('simulations')" id="nav-simulations" class="px-3 py-2 rounded-lg transition-all flex items-center gap-2 text-slate-300 hover:bg-slate-800">
+                    <i class="fa-solid fa-sliders"></i> Lab Simulasi
+                </button>
+                <button onclick="switchTab('studio')" id="nav-studio" class="px-3 py-2 rounded-lg transition-all flex items-center gap-2 text-slate-300 hover:bg-slate-800">
+                    <i class="fa-solid fa-video"></i> Studio Proyek Film
+                </button>
+                <button onclick="switchTab('quiz')" id="nav-quiz" class="px-3 py-2 rounded-lg transition-all flex items-center gap-2 text-slate-300 hover:bg-slate-800">
+                    <i class="fa-solid fa-clipboard-check"></i> Asesmen Kuis
+                </button>
+                <button onclick="switchTab('portfolio')" id="nav-portfolio" class="px-3 py-2 rounded-lg transition-all flex items-center gap-2 text-slate-300 hover:bg-slate-800">
+                    <i class="fa-solid fa-photo-film"></i> Galeri Karya
+                </button>
+                <button onclick="switchTab('teacher')" id="nav-teacher" class="px-3 py-2 rounded-lg transition-all flex items-center gap-2 text-amber-400 hover:bg-slate-800">
+                    <i class="fa-solid fa-chalkboard-user"></i> Dashboard Guru
+                </button>
+                <button onclick="requestAdminAccess()" id="nav-admin" class="px-3 py-2 rounded-lg transition-all flex items-center gap-2 text-rose-400 hover:bg-slate-800">
+                    <i class="fa-solid fa-user-gear"></i> Control Admin
+                </button>
+            </nav>
+
+            <!-- Quick Open Status Badge -->
+            <div class="hidden sm:flex items-center space-x-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Mode Terbuka Siswa & Guru
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE NAVIGATION BOTTOM BAR -->
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 glass-nav px-2 py-2 flex justify-around items-center text-[10px]">
+        <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-sky-400">
+            <i class="fa-solid fa-house text-base"></i> Beranda
+        </button>
+        <button onclick="switchTab('curriculum')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-sky-400">
+            <i class="fa-solid fa-map-location-dot text-base"></i> Kurikulum
+        </button>
+        <button onclick="switchTab('simulations')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-sky-400">
+            <i class="fa-solid fa-sliders text-base"></i> Simulasi
+        </button>
+        <button onclick="switchTab('studio')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-sky-400">
+            <i class="fa-solid fa-video text-base"></i> Proyek
+        </button>
+        <button onclick="switchTab('quiz')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-sky-400">
+            <i class="fa-solid fa-clipboard-check text-base"></i> Kuis
+        </button>
+        <button onclick="switchTab('teacher')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400">
+            <i class="fa-solid fa-chalkboard-user text-base"></i> Guru
+        </button>
+        <button onclick="requestAdminAccess()" class="flex flex-col items-center gap-1 text-rose-400 hover:text-rose-300">
+            <i class="fa-solid fa-user-gear text-base"></i> Admin
+        </button>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 mb-16 lg:mb-6 flex-grow w-full space-y-8">
+
+        <!-- ================= PAGE 1: DASHBOARD / BERANDA ================= -->
+        <section id="page-dashboard" class="space-y-6">
+            <!-- Hero Banner -->
+            <div class="glass-card rounded-3xl p-6 sm:p-10 border border-sky-500/20 relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="space-y-3 z-10 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                        <i class="fa-solid fa-door-open"></i> Akses Langsung Pembelajaran
+                    </div>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold text-white leading-tight">
+                        Laboratorium Interaktif Sinematografi & Pembuatan Film Pendek
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        Modul teori terstruktur dan 4 engine simulasi praktikum interaktif (Framing, Lighting, Storyboard, & Pasca-Produksi) untuk siswa DKV SMKN 3 Kuningan.
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-3">
+                        <button onclick="openVideoSim(1)" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-xl transition-all shadow-lg shadow-sky-600/30 flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Mulai Praktik Simulasi
+                        </button>
+                        <button onclick="switchTab('curriculum')" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-list-check"></i> Jelajahi Kurikulum
+                        </button>
+                    </div>
+                </div>
+
+                <div class="relative z-10 w-full md:w-80 glass-card p-4 rounded-2xl border border-slate-700 space-y-3 text-xs">
+                    <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                        <span class="font-bold text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-chart-line text-sky-400"></i> Progres Belajar Mandiri</span>
+                        <span id="dash-progress-pct" class="font-mono text-sky-400 font-bold">100%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="dash-progress-bar" class="bg-gradient-to-r from-sky-500 to-indigo-500 h-full w-full"></div>
+                    </div>
+                    <div class="space-y-1.5 text-[11px] text-slate-400">
+                        <div class="flex justify-between"><span>Level Pemula (Framing & Shot):</span><span class="text-emerald-400 font-bold">Terbuka Bebas</span></div>
+                        <div class="flex justify-between"><span>Level Menengah (Exposure & Lighting):</span><span class="text-emerald-400 font-bold">Terbuka Bebas</span></div>
+                        <div class="flex justify-between"><span>Level Lanjutan (Post-Production):</span><span class="text-emerald-400 font-bold">Terbuka Bebas</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Access Level Modules -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Beginner Module Card -->
+                <div class="glass-card rounded-2xl p-5 border border-slate-700/60 hover:border-sky-500/50 transition-all space-y-3 flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 font-mono font-bold text-[10px] rounded-full">LEVEL PEMULA</span>
+                            <i class="fa-solid fa-camera text-slate-500 text-lg"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-base">Dasar Kamera, Framing & Camera Movement</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">Memahami jenis shot (CU, MS, WS, ECU), pergerakan kamera (Pan, Tilt, Dolly), dan komposisi Rule of Thirds.</p>
+                    </div>
+                    <button onclick="openVideoSim(1)" class="w-full py-2 bg-slate-800 hover:bg-sky-600 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-sliders"></i> Buka Simulasi Framing
+                    </button>
+                </div>
+
+                <!-- Intermediate Module Card -->
+                <div class="glass-card rounded-2xl p-5 border border-slate-700/60 hover:border-amber-500/50 transition-all space-y-3 flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 font-mono font-bold text-[10px] rounded-full">LEVEL MENENGAH</span>
+                            <i class="fa-solid fa-sun text-slate-500 text-lg"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-base">Exposure Triangle & 3-Point Studio Lighting</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">Pengaturan Aperture (f-stop), Shutter Speed, ISO, White Balance, dan penataan lampu Key, Fill, Backlight.</p>
+                    </div>
+                    <button onclick="openVideoSim(2)" class="w-full py-2 bg-slate-800 hover:bg-amber-600 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-lightbulb"></i> Buka Simulasi Lighting
+                    </button>
+                </div>
+
+                <!-- Advanced Module Card -->
+                <div class="glass-card rounded-2xl p-5 border border-slate-700/60 hover:border-rose-500/50 transition-all space-y-3 flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="px-2.5 py-1 bg-rose-500/20 text-rose-400 font-mono font-bold text-[10px] rounded-full">LEVEL LANJUTAN</span>
+                            <i class="fa-solid fa-wand-magic-sparkles text-slate-500 text-lg"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-base">Storyboard, Directing & Pasca-Produksi</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">Penyusunan naskah, shot list, Color Grading LUTs, Audio Foley Mixing, dan final master render 1080p.</p>
+                    </div>
+                    <button onclick="openVideoSim(3)" class="w-full py-2 bg-slate-800 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-film"></i> Buka Simulasi Storyboard
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 2: PETA KURIKULUM & MATERI ================= -->
+        <section id="page-curriculum" class="hidden space-y-6">
+            <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-sky-400"></i> Peta Pembelajaran Videografi & Film Pendek
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Struktur Materi Alur Produksi Film Berdasarkan Kurikulum Merdeka (Mindful, Meaningful, Joyful)</p>
+                </div>
+
+                <div class="flex gap-2 text-xs">
+                    <button onclick="filterCurriculum('all')" class="px-3 py-1.5 bg-sky-600 text-white font-semibold rounded-lg">Semua Topik</button>
+                    <button onclick="filterCurriculum('pemula')" class="px-3 py-1.5 bg-slate-800 text-slate-300 font-semibold rounded-lg hover:bg-slate-700">Pemula</button>
+                    <button onclick="filterCurriculum('menengah')" class="px-3 py-1.5 bg-slate-800 text-slate-300 font-semibold rounded-lg hover:bg-slate-700">Menengah</button>
+                    <button onclick="filterCurriculum('lanjutan')" class="px-3 py-1.5 bg-slate-800 text-slate-300 font-semibold rounded-lg hover:bg-slate-700">Lanjutan</button>
+                </div>
+            </div>
+
+            <!-- Curriculum List Container -->
+            <div id="curriculum-list" class="space-y-4">
+                <!-- Rendered dynamically via JS -->
+            </div>
+        </section>
+
+        <!-- ================= PAGE 3: LABORATORIUM SIMULASI ================= -->
+        <section id="page-simulations" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-sky-400"></i> Laboratorium Simulasi Interaktif Praktik Kamera & Film
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Uji Coba Pengaturan Kamera, Pencahayaan, Storyboard & Studio Editing Pasca-Produksi</p>
+                </div>
+
+                <select id="sim-selector" onchange="openVideoSim(parseInt(this.value))" class="bg-slate-900 border border-slate-700 text-white text-xs font-semibold rounded-xl px-4 py-2.5 focus:outline-none focus:border-sky-500">
+                    <option value="1">Simulasi 1: Framing, Shot Types & Camera Movements (Pemula)</option>
+                    <option value="2">Simulasi 2: Exposure Triangle & 3-Point Lighting Studio (Menengah)</option>
+                    <option value="3">Simulasi 3: Storyboard, Shot List & Directing Scene (Lanjutan)</option>
+                    <option value="4">Simulasi 4: Pasca-Produksi (Color Grading & Audio Mixing Timeline)</option>
+                </select>
+            </div>
+
+            <div id="simulation-stage" class="glass-card rounded-2xl border border-slate-800 p-4 sm:p-6 min-h-[500px]">
+                <!-- Dynamic Simulation Content -->
+            </div>
+        </section>
+
+        <!-- ================= PAGE 4: STUDIO PROYEK FILM ================= -->
+        <section id="page-studio" class="hidden space-y-6">
+            <div class="border-b border-slate-800 pb-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-video text-sky-400"></i> Studio Proyek & Lembar Kerja (LKPD Film)
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">Tempat siswa menyusun ide film, mengunggah tautan video karya, dan mengumpulkan portofolio</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 text-xs">
+                <!-- Form Pengumpulan LKPD Proyek -->
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <h3 class="font-bold text-white text-sm border-b border-slate-800 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-file-pen text-sky-400"></i> Form Pengumpulan LKPD Film
+                    </h3>
+                    
+                    <form onsubmit="handleProjectSubmit(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-slate-300 font-semibold mb-1">Nama Pembuat / Kelompok</label>
+                            <input type="text" id="prj-student-name" required placeholder="Contoh: Budi Santoso & Tim" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2.5 focus:border-sky-500 outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 font-semibold mb-1">Judul Proyek / Film Pendek</label>
+                            <input type="text" id="prj-title" required placeholder="Contoh: Film Pendek 'Jejak Sang Garuda'" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2.5 focus:border-sky-500 outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 font-semibold mb-1">Level Kompetensi Proyek</label>
+                            <select id="prj-level" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2.5 focus:border-sky-500 outline-none">
+                                <option value="Pemula">Pemula (Framing & Composition)</option>
+                                <option value="Menengah">Menengah (Lighting & Cinematic Shot)</option>
+                                <option value="Lanjutan">Lanjutan (Full Short Film Production)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 font-semibold mb-1">Sinopsis & Catatan Produksi</label>
+                            <textarea id="prj-synopsis" required rows="3" placeholder="Tuliskan sinopsis singkat dan catatan teknik pergerakan kamera yang digunakan..." class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2.5 focus:border-sky-500 outline-none"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 font-semibold mb-1">Tautan Berkas (Google Drive / YouTube MP4)</label>
+                            <input type="url" id="prj-link" required placeholder="https://youtube.com/watch?v=..." class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2.5 focus:border-sky-500 outline-none">
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-sky-600 hover:bg-sky-500 font-bold text-white rounded-xl shadow-lg shadow-sky-600/30 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Kirim LKPD Proyek Film
+                        </button>
+                    </form>
+                </div>
+
+                <!-- List Proyek Terkumpul -->
+                <div class="lg:col-span-2 glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <h3 class="font-bold text-white text-sm border-b border-slate-800 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-folder-open text-emerald-400"></i> Daftar Karya Terkumpul
+                    </h3>
+
+                    <div id="submitted-projects-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+                        <!-- Dynamically filled -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 5: ASESMEN & KUIS ================= -->
+        <section id="page-quiz" class="hidden space-y-6">
+            <div class="border-b border-slate-800 pb-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-check text-sky-400"></i> Pusat Asesmen Kuis & Evaluasi HOTS
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">Uji Pemahaman Teori & Analisis Kasus Sinematografi Berpenilaian Otomatis</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+                <!-- Selector Quiz Level -->
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
+                    <h3 class="font-bold text-white text-sm border-b border-slate-800 pb-2">Pilih Paket Kuis</h3>
+                    <div class="space-y-2">
+                        <button onclick="loadQuizLevel('pemula')" class="w-full p-3 rounded-xl bg-slate-800 hover:bg-sky-600/20 text-left border border-slate-700 transition-all space-y-1">
+                            <div class="font-bold text-white">Kuis Level Pemula</div>
+                            <div class="text-[10px] text-slate-400">Framing, Types of Shot, Camera Movements</div>
+                        </button>
+                        <button onclick="loadQuizLevel('menengah')" class="w-full p-3 rounded-xl bg-slate-800 hover:bg-amber-600/20 text-left border border-slate-700 transition-all space-y-1">
+                            <div class="font-bold text-white">Kuis Level Menengah</div>
+                            <div class="text-[10px] text-slate-400">Exposure Triangle, Lighting, White Balance</div>
+                        </button>
+                        <button onclick="loadQuizLevel('lanjutan')" class="w-full p-3 rounded-xl bg-slate-800 hover:bg-rose-600/20 text-left border border-slate-700 transition-all space-y-1">
+                            <div class="font-bold text-white">Kuis Level Lanjutan</div>
+                            <div class="text-[10px] text-slate-400">Directing, Storyboard, Color Grading</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Interactive Engine -->
+                <div class="md:col-span-2 glass-card p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <div id="quiz-container">
+                        <!-- Dynamic quiz content -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 6: GALERI PORTOFOLIO ================= -->
+        <section id="page-portfolio" class="hidden space-y-6">
+            <div class="border-b border-slate-800 pb-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-photo-film text-sky-400"></i> Galeri Portofolio Sinematografi
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">Kumpulan Hasil Karya Videografi Siswa SMKN 3 Kuningan</p>
+            </div>
+
+            <div id="portfolio-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- ================= PAGE 7: DASHBOARD GURU ================= -->
+        <section id="page-teacher" class="hidden space-y-6">
+            <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-chalkboard-user"></i> Dashboard Guru & Kontrol Pembelajaran
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Pemantauan Kunci Akses Topik, Nilai Siswa, & Supervisi Academic Deep Learning</p>
+                </div>
+                <button onclick="toggleAllTopics()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 font-bold text-slate-950 text-xs rounded-xl shadow-lg transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-lock-open"></i> Buka / Kunci Semua Topik
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 text-xs">
+                <!-- Lock Control Panel -->
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
+                    <h3 class="font-bold text-white text-sm border-b border-slate-800 pb-2">Penguncian Minggu Pembelajaran</h3>
+                    <div id="teacher-topic-lock-list" class="space-y-2 max-h-96 overflow-y-auto pr-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Student Grade Summary -->
+                <div class="lg:col-span-2 glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <h3 class="font-bold text-white text-sm border-b border-slate-800 pb-2 flex justify-between items-center">
+                        <span>Rekapitulasi Nilai & LKPD Siswa</span>
+                        <span class="text-[10px] text-slate-400 font-mono">Status Live Open Lab</span>
+                    </h3>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-slate-300">
+                            <thead class="bg-slate-900 text-sky-400 uppercase text-[10px] font-mono border-b border-slate-800">
+                                <tr>
+                                    <th class="p-2">Nama Siswa / Kelompok</th>
+                                    <th class="p-2">Kuis Pemula</th>
+                                    <th class="p-2">Kuis Menengah</th>
+                                    <th class="p-2">Kuis Lanjutan</th>
+                                    <th class="p-2">Status LKPD</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacher-grade-table" class="divide-y divide-slate-800 text-[11px]">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 8: CONTROL ADMIN PANEL (PROTECTED) ================= -->
+        <section id="page-admin" class="hidden space-y-6">
+            <div class="border-b border-slate-800 pb-4 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-rose-400 flex items-center gap-2">
+                        <i class="fa-solid fa-user-gear"></i> Panel Pengelola System (Backup & Reset Data)
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Pengelolaan Ekspor/Impor JSON Basis Data & Reset Sampel Pembelajaran</p>
+                </div>
+                <button onclick="lockAdminPanel()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-rose-400 border border-rose-500/30 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-lock"></i> Kunci Kembalikan Admin
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+                <!-- Backup and Restore JSON -->
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <h3 class="font-bold text-white text-sm border-b border-slate-800 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-database text-sky-400"></i> Ekspor / Impor System State (.JSON)
+                    </h3>
+                    <p class="text-slate-400 leading-relaxed">Simpan atau pulihkan seluruh data aplikasi (nilai kuis, tugas LKPD, status gembok materi) dalam format file JSON.</p>
+                    
+                    <div class="flex gap-3">
+                        <button onclick="exportSystemJSON()" class="flex-1 py-2.5 bg-sky-600 hover:bg-sky-500 font-bold text-white rounded-xl transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> Ekspor JSON
+                        </button>
+                        <label class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 font-bold text-white rounded-xl border border-slate-700 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-upload"></i> Impor JSON
+                            <input type="file" accept=".json" onchange="importSystemJSON(event)" class="hidden">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Clear Demo Data -->
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <h3 class="font-bold text-rose-400 text-sm border-b border-slate-800 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-trash-can"></i> Hapus Data Demo / Reset State
+                    </h3>
+                    <p class="text-slate-400 leading-relaxed">Kosongkan data sampel tugas, kuis, dan progres demo untuk memulai sesi pembelajaran baru sekolah secara bersih.</p>
+                    <button onclick="clearDemoData()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 font-bold text-white rounded-xl shadow-lg shadow-rose-600/30 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Bersihkan Semua Data Demo
+                    </button>
+                </div>
+
+                <!-- Admin Password Settings -->
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <h3 class="font-bold text-amber-400 text-sm border-b border-slate-800 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-key"></i> Ubah Kata Sandi Admin
+                    </h3>
+                    <p class="text-slate-400 leading-relaxed">Perbarui kata sandi untuk melindungi Panel Control Admin dari akses yang tidak diinginkan.</p>
+                    <form onsubmit="changeAdminPassword(event)" class="space-y-2">
+                        <input type="password" id="new-admin-pass" required placeholder="Kata sandi baru..." class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2 focus:border-amber-500 outline-none">
+                        <button type="submit" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl transition-all">
+                            Simpan Kata Sandi Baru
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p>&copy; 2026-2027 SMK Negeri 3 Kuningan &bull; Kompetensi Keahlian Desain Komunikasi Visual (DKV)</p>
+        <p class="text-[10px] text-slate-600 mt-1">Aplikasi Pembelajaran Interaktif Videografi & Sinematografi Berbasis Deep Learning (Open Access)</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <script>
+        // GLOBAL APP STATE
+        let appState = {
+            adminPassword: "admin123", // Default password for Control Admin
+            topicLocks: {},
+            submittedProjects: [
+                {
+                    id: 1,
+                    title: "Film Pendek 'Jejak Sang Garuda'",
+                    studentName: "Budi Santoso & Tim",
+                    level: "Lanjutan",
+                    synopsis: "Eksplorasi kisah perjuangan remaja dalam mempertahankan nilai kebudayaan lokal.",
+                    link: "https://youtube.com/watch?v=demo1",
+                    date: "2026-10-15"
+                },
+                {
+                    id: 2,
+                    title: "Eksperimen Lighting Studio 'Cahaya Malam'",
+                    studentName: "Siti Rahma",
+                    level: "Menengah",
+                    synopsis: "Penerapan 3-Point Studio Lighting untuk menciptakan nuansa dramatis pada karakter utama.",
+                    link: "https://youtube.com/watch?v=demo2",
+                    date: "2026-10-20"
+                }
+            ],
+            quizScores: {
+                pemula: 100,
+                menengah: 85,
+                lanjutan: 90
+            }
+        };
+
+        let isAdminAuthenticated = false;
+
+        // CURRICULUM DATA
+        const curriculumData = [
+            {
+                id: 1,
+                level: "pemula",
+                levelLabel: "Level Pemula",
+                title: "Dasar Kamera, Framing & Types of Shot",
+                cp: "Peserta didik mampu memahami dan menerapkan jenis pengambilan gambar dasar (CU, MS, WS, ECU, OTS) serta Rule of Thirds.",
+                desc: "Pengenalan instrumen fisik kamera, sudut pandang (High Angle, Low Angle, Eye Level), dan komposisi tata letak gambar.",
+                simId: 1
+            },
+            {
+                id: 2,
+                level: "menengah",
+                levelLabel: "Level Menengah",
+                title: "Segitiga Eksposure & 3-Point Studio Lighting",
+                cp: "Peserta didik mampu mengombinasikan Aperture, Shutter Speed, ISO, dan tata cahaya Key-Fill-Backlight studio.",
+                desc: "Penguasaan kedalaman ruang (bokeh), kontrol motion blur, noise sensor ISO, dan pembuatan skema lampu studio.",
+                simId: 2
+            },
+            {
+                id: 3,
+                level: "lanjutan",
+                levelLabel: "Level Lanjutan",
+                title: "Storyboard, Directing & Pasca-Produksi Video",
+                cp: "Peserta didik mampu merancang naskah, shot list, mengarahkan adegan, serta melakukan Color Grading & Audio Foley.",
+                desc: "Alur lengkap pra-produksi, produksi utama (principal photography), hingga finishing master render video MP4.",
+                simId: 3
+            }
+        ];
+
+        // INIT LOAD
+        window.onload = function() {
+            loadStateFromStorage();
+            renderCurriculum();
+            renderSubmittedProjects();
+            renderPortfolio();
+            renderTeacherLockList();
+            renderTeacherGrades();
+            loadQuizLevel('pemula');
+            openVideoSim(1);
+        };
+
+        // STORAGE PERSISTENCE
+        function saveStateToStorage() {
+            localStorage.setItem('video_open_app_state', JSON.stringify(appState));
+        }
+
+        function loadStateFromStorage() {
+            const saved = localStorage.getItem('video_open_app_state');
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                    if (!appState.adminPassword) appState.adminPassword = "admin123";
+                } catch(e) { console.error(e); }
+            }
+        }
+
+        // NAVIGATION TAB SWITCHER
+        function switchTab(tabId) {
+            // Guard Control Admin access
+            if (tabId === 'admin' && !isAdminAuthenticated) {
+                requestAdminAccess();
+                return;
+            }
+
+            const pages = ['dashboard', 'curriculum', 'simulations', 'studio', 'quiz', 'portfolio', 'teacher', 'admin'];
+            pages.forEach(p => {
+                const el = document.getElementById(`page-${p}`);
+                const nav = document.getElementById(`nav-${p}`);
+                if (el) el.classList.add('hidden');
+                if (nav) {
+                    nav.classList.remove('text-sky-400', 'bg-sky-500/10');
+                    nav.classList.add('text-slate-300');
+                }
+            });
+
+            const targetPage = document.getElementById(`page-${tabId}`);
+            const targetNav = document.getElementById(`nav-${tabId}`);
+            if (targetPage) targetPage.classList.remove('hidden');
+            if (targetNav) {
+                targetNav.classList.add('text-sky-400', 'bg-sky-500/10');
+                targetNav.classList.remove('text-slate-300');
+            }
+        }
+
+        // ADMIN AUTHENTICATION LOGIC
+        function requestAdminAccess() {
+            if (isAdminAuthenticated) {
+                switchTab('admin');
+            } else {
+                document.getElementById('admin-pass-input').value = '';
+                document.getElementById('admin-auth-modal').classList.remove('hidden');
+            }
+        }
+
+        function closeAdminAuthModal() {
+            document.getElementById('admin-auth-modal').classList.add('hidden');
+        }
+
+        function verifyAdminPassword(e) {
+            e.preventDefault();
+            const inputPass = document.getElementById('admin-pass-input').value;
+            if (inputPass === appState.adminPassword) {
+                isAdminAuthenticated = true;
+                closeAdminAuthModal();
+                switchTab('admin');
+                showNotice("Akses Diterima", "Selamat datang di Panel Control Admin!");
+            } else {
+                showNotice("Akses Ditolak", "Kata sandi Admin salah!", "fa-circle-xmark");
+            }
+        }
+
+        function lockAdminPanel() {
+            isAdminAuthenticated = false;
+            switchTab('dashboard');
+            showNotice("Panel Dikunci", "Sesi Control Admin telah dikunci kembali.");
+        }
+
+        function changeAdminPassword(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('new-admin-pass').value;
+            if (newPass.length < 4) {
+                showNotice("Gagal", "Kata sandi minimal 4 karakter.");
+                return;
+            }
+            appState.adminPassword = newPass;
+            saveStateToStorage();
+            document.getElementById('new-admin-pass').value = '';
+            showNotice("Berhasil", "Kata sandi Admin berhasil diperbarui!");
+        }
+
+        // NOTIFICATION SYSTEM
+        function showNotice(title, msg, iconClass = "fa-circle-info") {
+            document.getElementById('notice-title').textContent = title;
+            document.getElementById('notice-msg').textContent = msg;
+            document.getElementById('notice-modal').classList.remove('hidden');
+        }
+
+        function closeNotice() {
+            document.getElementById('notice-modal').classList.add('hidden');
+        }
+
+        // CURRICULUM RENDERING
+        function renderCurriculum(filter = 'all') {
+            const container = document.getElementById('curriculum-list');
+            if (!container) return;
+
+            const filtered = filter === 'all' ? curriculumData : curriculumData.filter(c => c.level === filter);
+
+            container.innerHTML = filtered.map(c => `
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="px-2.5 py-1 bg-sky-500/20 text-sky-400 font-mono font-bold text-[10px] rounded-full uppercase">${c.levelLabel}</span>
+                        <button onclick="openVideoSim(${c.simId})" class="text-xs text-sky-400 hover:underline flex items-center gap-1 font-semibold">
+                            Uji Coba Simulasi <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-bold text-white text-base">${c.title}</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">${c.desc}</p>
+                    <div class="p-3 bg-slate-900/80 rounded-xl text-[11px] text-slate-400 border border-slate-800">
+                        <strong>Capaian Pembelajaran (CP):</strong> ${c.cp}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCurriculum(type) {
+            renderCurriculum(type);
+        }
+
+        // SIMULATION ENGINES (1 - 4)
+        function openVideoSim(simId) {
+            switchTab('simulations');
+            const selector = document.getElementById('sim-selector');
+            if (selector) selector.value = simId;
+            const stage = document.getElementById('simulation-stage');
+
+            switch(simId) {
+                case 1: renderSimFraming(stage); break;
+                case 2: renderSimExposure(stage); break;
+                case 3: renderSimStoryboard(stage); break;
+                case 4: renderSimPostProd(stage); break;
+                default: renderSimFraming(stage);
+            }
+        }
+
+        // SIMULASI 1: FRAMING & SHOT TYPES
+        function renderSimFraming(container) {
+            container.innerHTML = `
+                <div class="space-y-4 text-xs">
+                    <div class="border-b border-slate-800 pb-3 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-white text-base">Simulasi 1: Framing, Shot Types & Camera Movements</h3>
+                            <p class="text-slate-400">Pilih tipe shot dan gerakan kamera untuk melihat hasil komposisi framing visual.</p>
+                        </div>
+                        <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 font-mono font-bold text-[10px] rounded-full">Level Pemula</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-3 bg-slate-900 p-4 rounded-xl border border-slate-800">
+                            <label class="block text-slate-300 font-semibold">Pilih Shot Type (Ukuran Bingkai)</label>
+                            <select id="sim1-shot" onchange="updateSim1View()" class="w-full bg-slate-950 text-white p-2.5 rounded-lg border border-slate-700">
+                                <option value="CU">Close-Up (CU) - Emosi Ekspresi</option>
+                                <option value="MS">Medium Shot (MS) - Pinggang ke Atas</option>
+                                <option value="WS">Wide Shot (WS) - Subjek & Lingkungan</option>
+                                <option value="ECU">Extreme Close-Up (ECU) - Detail Mata/Tangan</option>
+                            </select>
+
+                            <label class="block text-slate-300 font-semibold pt-2">Camera Movement (Gerakan Kamera)</label>
+                            <select id="sim1-move" onchange="updateSim1View()" class="w-full bg-slate-950 text-white p-2.5 rounded-lg border border-slate-700">
+                                <option value="Static">Static Lock - Kamera Diam</option>
+                                <option value="Pan">Pan Left-Right - Geser Samping</option>
+                                <option value="Tilt">Tilt Up-Down - Geser Vertikal</option>
+                                <option value="Dolly">Dolly In - Maju Mendekat</option>
+                            </select>
+
+                            <button onclick="resetSim1()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-lg transition-all">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Parameter
+                            </button>
+                        </div>
+
+                        <div class="md:col-span-2 glass-card p-4 rounded-xl border border-slate-800 flex flex-col justify-between space-y-4">
+                            <div id="sim1-viewport" class="w-full h-64 bg-slate-950 rounded-xl border-2 border-slate-700 relative overflow-hidden flex items-center justify-center transition-all">
+                                <div id="sim1-actor-icon" class="text-slate-300 transition-all text-7xl">
+                                    <i class="fa-solid fa-user-astronaut"></i>
+                                </div>
+
+                                <!-- Viewfinder HUD -->
+                                <div class="absolute inset-0 border border-sky-500/30 grid grid-cols-3 pointer-events-none opacity-30">
+                                    <div class="border-r border-sky-500"></div>
+                                    <div class="border-r border-sky-500"></div>
+                                    <div></div>
+                                </div>
+                                <div class="absolute top-2 left-2 text-[10px] bg-red-600 text-white px-2 py-0.5 rounded font-mono font-bold">● REC 1080p</div>
+                                <div id="sim1-hud-label" class="absolute bottom-2 left-2 text-[10px] bg-slate-900/90 text-sky-400 font-mono px-2 py-1 rounded border border-slate-700">
+                                    SHOT: Close-Up | MOVE: Static
+                                </div>
+                            </div>
+
+                            <p id="sim1-desc" class="p-3 bg-slate-900 rounded-lg text-slate-300 text-[11px] border border-slate-800">
+                                Analisis Komposisi: Shot Close-Up memfokuskan emosi aktor secara mendalam.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            updateSim1View();
+        }
+
+        function updateSim1View() {
+            const shot = document.getElementById('sim1-shot')?.value || 'CU';
+            const move = document.getElementById('sim1-move')?.value || 'Static';
+            const actor = document.getElementById('sim1-actor-icon');
+            const label = document.getElementById('sim1-hud-label');
+            const desc = document.getElementById('sim1-desc');
+
+            if (!actor) return;
+
+            if (shot === 'ECU') actor.style.transform = 'scale(2.2)';
+            else if (shot === 'CU') actor.style.transform = 'scale(1.5)';
+            else if (shot === 'MS') actor.style.transform = 'scale(1.0)';
+            else if (shot === 'WS') actor.style.transform = 'scale(0.6)';
+
+            label.textContent = `SHOT: ${shot} | MOVE: ${move}`;
+            desc.textContent = `Pilihan Shot ${shot} dengan gerakan ${move}. Pengaturan ini cocok untuk membangun suasana visual adegan film pendek yang presisi.`;
+        }
+
+        function resetSim1() {
+            if (document.getElementById('sim1-shot')) document.getElementById('sim1-shot').value = 'CU';
+            if (document.getElementById('sim1-move')) document.getElementById('sim1-move').value = 'Static';
+            updateSim1View();
+        }
+
+        // SIMULASI 2: EXPOSURE & LIGHTING
+        function renderSimExposure(container) {
+            container.innerHTML = `
+                <div class="space-y-4 text-xs">
+                    <div class="border-b border-slate-800 pb-3 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-white text-base">Simulasi 2: Exposure Triangle & 3-Point Studio Lighting</h3>
+                            <p class="text-slate-400">Atur Aperture, Shutter Speed, ISO, dan lampu studio (Key, Fill, Backlight).</p>
+                        </div>
+                        <span class="px-3 py-1 bg-amber-500/20 text-amber-400 font-mono font-bold text-[10px] rounded-full">Level Menengah</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-3 bg-slate-900 p-4 rounded-xl border border-slate-800">
+                            <div class="space-y-1">
+                                <div class="flex justify-between"><span>Aperture (f-stop):</span><span id="sim2-ap-val" class="font-mono text-amber-400 font-bold">f/2.8</span></div>
+                                <input type="range" id="sim2-ap" min="1.4" max="16" step="0.2" value="2.8" oninput="updateSim2View()" class="w-full accent-amber-400">
+                            </div>
+
+                            <div class="space-y-1">
+                                <div class="flex justify-between"><span>Shutter Speed:</span><span id="sim2-sh-val" class="font-mono text-amber-400 font-bold">1/50 sec</span></div>
+                                <input type="range" id="sim2-sh" min="10" max="1000" step="10" value="50" oninput="updateSim2View()" class="w-full accent-amber-400">
+                            </div>
+
+                            <div class="space-y-1">
+                                <div class="flex justify-between"><span>ISO Sensor:</span><span id="sim2-iso-val" class="font-mono text-amber-400 font-bold">ISO 400</span></div>
+                                <input type="range" id="sim2-iso" min="100" max="6400" step="100" value="400" oninput="updateSim2View()" class="w-full accent-amber-400">
+                            </div>
+
+                            <div class="font-bold text-slate-200 pt-2 border-t border-slate-800">3-Point Lighting Studio</div>
+                            <label class="flex justify-between items-center p-2 bg-slate-950 rounded border border-slate-800 cursor-pointer">
+                                <span>Key Light (Cahaya Utama)</span>
+                                <input type="checkbox" id="sim2-key" checked onchange="updateSim2View()" class="accent-amber-400">
+                            </label>
+                            <label class="flex justify-between items-center p-2 bg-slate-950 rounded border border-slate-800 cursor-pointer">
+                                <span>Fill Light (Bayangan Soft)</span>
+                                <input type="checkbox" id="sim2-fill" checked onchange="updateSim2View()" class="accent-amber-400">
+                            </label>
+                            <label class="flex justify-between items-center p-2 bg-slate-950 rounded border border-slate-800 cursor-pointer">
+                                <span>Back Light (Pemisah BG)</span>
+                                <input type="checkbox" id="sim2-back" checked onchange="updateSim2View()" class="accent-amber-400">
+                            </label>
+                        </div>
+
+                        <div class="md:col-span-2 glass-card p-4 rounded-xl border border-slate-800 flex flex-col justify-between space-y-4">
+                            <div id="sim2-monitor" class="w-full h-64 bg-slate-950 rounded-xl border-2 border-slate-700 relative overflow-hidden flex items-center justify-center transition-all">
+                                <i class="fa-solid fa-user-tie text-8xl text-slate-300 transition-all" id="sim2-actor"></i>
+                                <span id="sim2-badge" class="absolute top-2 right-2 px-2 py-1 rounded font-mono font-bold text-[10px] bg-emerald-500/20 text-emerald-400">
+                                    EXPOSURE IDEAL
+                                </span>
+                            </div>
+
+                            <p id="sim2-desc" class="p-3 bg-slate-900 rounded-lg text-slate-300 text-[11px] border border-slate-800">
+                                Kombinasi ideal. Gambar terang seimbang dengan efek kedalaman bokeh latar belakang.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            updateSim2View();
+        }
+
+        function updateSim2View() {
+            const ap = parseFloat(document.getElementById('sim2-ap')?.value || 2.8);
+            const sh = parseInt(document.getElementById('sim2-sh')?.value || 50);
+            const iso = parseInt(document.getElementById('sim2-iso')?.value || 400);
+
+            const key = document.getElementById('sim2-key')?.checked;
+            const fill = document.getElementById('sim2-fill')?.checked;
+            const back = document.getElementById('sim2-back')?.checked;
+
+            if (document.getElementById('sim2-ap-val')) document.getElementById('sim2-ap-val').textContent = `f/${ap}`;
+            if (document.getElementById('sim2-sh-val')) document.getElementById('sim2-sh-val').textContent = `1/${sh} sec`;
+            if (document.getElementById('sim2-iso-val')) document.getElementById('sim2-iso-val').textContent = `ISO ${iso}`;
+
+            const monitor = document.getElementById('sim2-monitor');
+            const badge = document.getElementById('sim2-badge');
+            const desc = document.getElementById('sim2-desc');
+
+            if (!monitor) return;
+
+            let lightMult = (key ? 0.5 : 0) + (fill ? 0.3 : 0) + (back ? 0.2 : 0);
+            let score = (iso / 400) * (50 / sh) * (4 / (ap * ap)) * lightMult * 1.5;
+
+            let brightnessPct = Math.min(Math.max(score * 80, 10), 200);
+            monitor.style.filter = `brightness(${brightnessPct}%)`;
+
+            if (brightnessPct < 50) {
+                badge.className = "absolute top-2 right-2 px-2 py-1 rounded font-mono font-bold text-[10px] bg-rose-500/20 text-rose-400";
+                badge.textContent = "UNDEREXPOSED (GELAP)";
+                desc.textContent = "Kamera kekurangan cahaya. Buka Aperture lebih besar (f-stop kecil) atau naikkan ISO.";
+            } else if (brightnessPct > 150) {
+                badge.className = "absolute top-2 right-2 px-2 py-1 rounded font-mono font-bold text-[10px] bg-amber-500/20 text-amber-400";
+                badge.textContent = "OVEREXPOSED (SILAU)";
+                desc.textContent = "Gambar mengalami overexposure. Tutup Aperture (f-stop besar) atau percepat Shutter Speed.";
+            } else {
+                badge.className = "absolute top-2 right-2 px-2 py-1 rounded font-mono font-bold text-[10px] bg-emerald-500/20 text-emerald-400";
+                badge.textContent = "EXPOSURE IDEAL";
+                desc.textContent = "Exposure seimbang. Kombinasi 3-Point Lighting memberikan dimensi pencahayaan sinematik yang profesional.";
+            }
+        }
+
+        // SIMULASI 3: STORYBOARD & DIRECTING
+        function renderSimStoryboard(container) {
+            container.innerHTML = `
+                <div class="space-y-4 text-xs">
+                    <div class="border-b border-slate-800 pb-3 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-white text-base">Simulasi 3: Storyboard, Shot List & Directing Scene</h3>
+                            <p class="text-slate-400">Susun urutan adegan sinematik film pendek Anda.</p>
+                        </div>
+                        <span class="px-3 py-1 bg-rose-500/20 text-rose-400 font-mono font-bold text-[10px] rounded-full">Level Lanjutan</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-3 bg-slate-900 p-4 rounded-xl border border-slate-800">
+                            <label class="block text-slate-300 font-semibold">Tipe Shot Adegan</label>
+                            <select id="sim3-type" class="w-full bg-slate-950 text-white p-2 rounded border border-slate-700">
+                                <option value="Establishing Shot">Establishing Shot (ES)</option>
+                                <option value="Medium Two Shot">Medium Two Shot (M2S)</option>
+                                <option value="Over The Shoulder">Over The Shoulder (OTS)</option>
+                                <option value="Close Up Dialog">Close Up Dialog (CU)</option>
+                            </select>
+
+                            <label class="block text-slate-300 font-semibold pt-2">Catatan Sutradara</label>
+                            <input type="text" id="sim3-notes" placeholder="Contoh: Tokoh A menatap curiga..." class="w-full bg-slate-950 text-white p-2 rounded border border-slate-700">
+
+                            <button onclick="addSim3Shot()" class="w-full py-2.5 bg-sky-600 hover:bg-sky-500 font-bold text-white rounded-xl transition-all">
+                                <i class="fa-solid fa-plus"></i> Tambah Shot ke Storyboard
+                            </button>
+                        </div>
+
+                        <div class="md:col-span-2 glass-card p-4 rounded-xl border border-slate-800 space-y-3">
+                            <h4 class="font-bold text-white">Papan Storyboard Film Pendek</h4>
+                            <div id="sim3-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 min-h-[200px]">
+                                <!-- Storyboard cards -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            renderSim3Grid();
+        }
+
+        let sim3List = [
+            { id: 1, type: "Establishing Shot", notes: "Gedung sekolah SMKN 3 Kuningan pagi hari." },
+            { id: 2, type: "Over The Shoulder", notes: "Dialog dua siswa di lorong kelas." }
+        ];
+
+        function addSim3Shot() {
+            const type = document.getElementById('sim3-type')?.value;
+            const notes = document.getElementById('sim3-notes')?.value || "Adegan perbincangan.";
+            sim3List.push({ id: Date.now(), type, notes });
+            renderSim3Grid();
+        }
+
+        function renderSim3Grid() {
+            const grid = document.getElementById('sim3-grid');
+            if (!grid) return;
+
+            grid.innerHTML = sim3List.map((s, idx) => `
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2 relative group">
+                    <div class="flex justify-between items-center text-[10px]">
+                        <span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-400 font-bold font-mono">SHOT #${idx + 1}</span>
+                        <span class="text-slate-400 font-semibold">${s.type}</span>
+                    </div>
+                    <div class="w-full h-20 bg-slate-900 rounded flex items-center justify-center border border-slate-800">
+                        <i class="fa-solid fa-clapperboard text-2xl text-slate-600"></i>
+                    </div>
+                    <p class="text-[11px] text-slate-300 line-clamp-2">${s.notes}</p>
+                    <button onclick="removeSim3Shot(${s.id})" class="absolute top-2 right-2 text-rose-400 opacity-0 group-hover:opacity-100 transition-all text-xs">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeSim3Shot(id) {
+            sim3List = sim3List.filter(s => s.id !== id);
+            renderSim3Grid();
+        }
+
+        // SIMULASI 4: PASCA PRODUKSI (COLOR GRADING)
+        function renderSimPostProd(container) {
+            container.innerHTML = `
+                <div class="space-y-4 text-xs">
+                    <div class="border-b border-slate-800 pb-3 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-white text-base">Simulasi 4: Pasca-Produksi (Color Grading LUTs & Audio Foley)</h3>
+                            <p class="text-slate-400">Pemberian mood warna sinematik dan balancing volume audio scoring.</p>
+                        </div>
+                        <span class="px-3 py-1 bg-sky-500/20 text-sky-400 font-mono font-bold text-[10px] rounded-full">Level Pasca-Produksi</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-3 bg-slate-900 p-4 rounded-xl border border-slate-800">
+                            <label class="block text-slate-300 font-semibold">Preset Color Grading LUT</label>
+                            <select id="sim4-lut" onchange="updateSim4View()" class="w-full bg-slate-950 text-white p-2 rounded border border-slate-700">
+                                <option value="flat">Flat LOG (Raw Original)</option>
+                                <option value="teal">Teal & Orange (Blockbuster)</option>
+                                <option value="noir">Black & White (Noir Mystery)</option>
+                                <option value="warm">Warm Vintage (Sunburst)</option>
+                            </select>
+
+                            <div class="space-y-1 pt-2">
+                                <div class="flex justify-between"><span>Kontras Gambar:</span><span id="sim4-c-val">100%</span></div>
+                                <input type="range" id="sim4-c" min="50" max="200" value="100" oninput="updateSim4View()" class="w-full accent-sky-400">
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 glass-card p-4 rounded-xl border border-slate-800 flex flex-col justify-between space-y-4">
+                            <div id="sim4-monitor" class="w-full h-64 bg-slate-950 rounded-xl border-2 border-slate-700 relative overflow-hidden flex items-center justify-center transition-all">
+                                <i class="fa-solid fa-film text-7xl text-slate-400"></i>
+                                <span id="sim4-lut-label" class="absolute bottom-2 left-2 text-[10px] bg-slate-900/90 text-sky-400 px-2 py-1 rounded font-mono border border-slate-700">
+                                    LUT: Flat LOG
+                                </span>
+                            </div>
+
+                            <p class="p-3 bg-slate-900 rounded-lg text-slate-300 text-[11px] border border-slate-800">
+                                Color grading memberikan mood emosional pada cerita sinematik Anda.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            updateSim4View();
+        }
+
+        function updateSim4View() {
+            const lut = document.getElementById('sim4-lut')?.value || 'flat';
+            const contrast = document.getElementById('sim4-c')?.value || 100;
+
+            if (document.getElementById('sim4-c-val')) document.getElementById('sim4-c-val').textContent = `${contrast}%`;
+
+            const monitor = document.getElementById('sim4-monitor');
+            const label = document.getElementById('sim4-lut-label');
+
+            if (!monitor) return;
+
+            if (lut === 'teal') {
+                monitor.style.filter = `contrast(${contrast}%) sepia(30%) hue-rotate(170deg)`;
+                label.textContent = "LUT: Teal & Orange";
+            } else if (lut === 'noir') {
+                monitor.style.filter = `contrast(${contrast}%) grayscale(100%)`;
+                label.textContent = "LUT: Film Noir Classic";
+            } else if (lut === 'warm') {
+                monitor.style.filter = `contrast(${contrast}%) sepia(50%) saturate(140%)`;
+                label.textContent = "LUT: Warm Vintage";
+            } else {
+                monitor.style.filter = `contrast(${contrast}%) grayscale(0%) sepia(0%)`;
+                label.textContent = "LUT: Flat LOG (Raw)";
+            }
+        }
+
+        // STUDIO PROYEK & LKPD HANDLER
+        function handleProjectSubmit(e) {
+            e.preventDefault();
+            const studentName = document.getElementById('prj-student-name').value;
+            const title = document.getElementById('prj-title').value;
+            const level = document.getElementById('prj-level').value;
+            const synopsis = document.getElementById('prj-synopsis').value;
+            const link = document.getElementById('prj-link').value;
+
+            const newProject = {
+                id: Date.now(),
+                title,
+                studentName: studentName || 'Siswa DKV',
+                level,
+                synopsis,
+                link,
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            appState.submittedProjects.unshift(newProject);
+            saveStateToStorage();
+            renderSubmittedProjects();
+            renderPortfolio();
+            renderTeacherGrades();
+
+            document.getElementById('prj-student-name').value = '';
+            document.getElementById('prj-title').value = '';
+            document.getElementById('prj-synopsis').value = '';
+            document.getElementById('prj-link').value = '';
+
+            showNotice("LKPD Terkirim", "Proyek film pendek Anda berhasil disimpan dan diteruskan ke Galeri Portofolio!");
+        }
+
+        function renderSubmittedProjects() {
+            const container = document.getElementById('submitted-projects-list');
+            if (!container) return;
+
+            if (appState.submittedProjects.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 text-center py-4">Belum ada karya proyek yang dikumpulkan.</p>`;
+                return;
+            }
+
+            container.innerHTML = appState.submittedProjects.map(p => `
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
+                    <div class="flex justify-between items-center text-[10px]">
+                        <span class="px-2 py-0.5 bg-sky-500/20 text-sky-400 font-bold font-mono rounded">${p.level}</span>
+                        <span class="text-slate-400">${p.date} &bull; ${p.studentName}</span>
+                    </div>
+                    <h4 class="font-bold text-white text-xs">${p.title}</h4>
+                    <p class="text-slate-300 text-[11px] line-clamp-2">${p.synopsis}</p>
+                    <a href="${p.link}" target="_blank" class="inline-flex items-center gap-1 text-sky-400 hover:underline text-[11px] font-semibold">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Tonton Berkas Video
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        // PORTFOLIO GALLERY
+        function renderPortfolio() {
+            const container = document.getElementById('portfolio-grid');
+            if (!container) return;
+
+            container.innerHTML = appState.submittedProjects.map(p => `
+                <div class="glass-card rounded-2xl overflow-hidden border border-slate-800 space-y-3 p-4 flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <div class="w-full h-32 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-center text-slate-600">
+                            <i class="fa-solid fa-film text-4xl"></i>
+                        </div>
+                        <span class="px-2 py-0.5 bg-sky-500/20 text-sky-400 font-mono font-bold text-[10px] rounded uppercase">${p.level}</span>
+                        <h4 class="font-bold text-white text-xs">${p.title}</h4>
+                        <p class="text-slate-400 text-[11px] line-clamp-2">${p.synopsis}</p>
+                    </div>
+                    <div class="pt-2 border-t border-slate-800 flex justify-between items-center text-[10px]">
+                        <span class="text-slate-400">${p.studentName}</span>
+                        <a href="${p.link}" target="_blank" class="text-sky-400 font-bold hover:underline">Tonton Video</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // QUIZ ENGINE
+        const quizData = {
+            pemula: [
+                {
+                    q: "Tipe shot manakah yang paling tepat digunakan untuk memperlihatkan emosi mendalam pada wajah karakter?",
+                    ops: ["Wide Shot (WS)", "Close-Up (CU)", "Extreme Long Shot (ELS)", "Establishing Shot"],
+                    ans: 1,
+                    exp: "Close-Up (CU) memfokuskan objek dari bahu hingga atas kepala sehingga emosi mimik muka karakter terlihat sangat jelas."
+                }
+            ],
+            menengah: [
+                {
+                    q: "Apa akibatnya jika nilai Aperture diatur pada angka f-stop kecil (misal f/1.8)?",
+                    ops: ["Gambar menjadi gelap total", "Ruang tajam sangat sempit (efek bokeh latar belakang)", "Video mengalami flickering", "Noise sensor meningkat drastis"],
+                    ans: 1,
+                    exp: "Bukaan diafragma f-stop kecil (f/1.8) memasukkan lebih banyak cahaya dan menciptakan depth of field tipis (bokeh)."
+                }
+            ],
+            lanjutan: [
+                {
+                    q: "Fungsi utama dari penggunaan Color Grading style 'Teal & Orange' dalam film blockbuster adalah...",
+                    ops: ["Membuat gambar menjadi hitam putih", "Menciptakan kontras warna komplementer antara warna kulit manusia dengan latar belakang", "Menghilangkan noise sensor", "Mempercepat proses render video"],
+                    ans: 1,
+                    exp: "Teal (biru kehijauan) dan Orange (oranye) adalah warna komplementer yang memisahkan warna kulit subjek secara alami dari latar belakang."
+                }
+            ]
+        };
+
+        let currentQuizLevel = 'pemula';
+
+        function loadQuizLevel(lvl) {
+            currentQuizLevel = lvl;
+            const container = document.getElementById('quiz-container');
+            if (!container) return;
+
+            const list = quizData[lvl];
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <h3 class="font-bold text-white text-base border-b border-slate-800 pb-2 uppercase">Kuis ${lvl}</h3>
+                    ${list.map((q, idx) => `
+                        <div class="space-y-3 bg-slate-900 p-4 rounded-xl border border-slate-800">
+                            <p class="font-semibold text-slate-200">${idx + 1}. ${q.q}</p>
+                            <div class="space-y-2">
+                                ${q.ops.map((op, oIdx) => `
+                                    <label class="flex items-center gap-2 p-2 bg-slate-950 rounded border border-slate-800 cursor-pointer hover:border-sky-500">
+                                        <input type="radio" name="q-${idx}" value="${oIdx}" class="accent-sky-500">
+                                        <span class="text-slate-300 text-xs">${op}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                    <button onclick="submitQuiz('${lvl}')" class="w-full py-3 bg-sky-600 hover:bg-sky-500 font-bold text-white rounded-xl transition-all">
+                        Selesaikan & Hitung Nilai Kuis
+                    </button>
+                </div>
+            `;
+        }
+
+        function submitQuiz(lvl) {
+            const list = quizData[lvl];
+            let correct = 0;
+
+            list.forEach((q, idx) => {
+                const selected = document.querySelector(`input[name="q-${idx}"]:checked`);
+                if (selected && parseInt(selected.value) === q.ans) {
+                    correct++;
+                }
+            });
+
+            const score = Math.round((correct / list.length) * 100);
+            appState.quizScores[lvl] = score;
+            saveStateToStorage();
+            renderTeacherGrades();
+
+            showNotice("Hasil Kuis", `Nilai Kuis ${lvl.toUpperCase()}: ${score}/100. Jawaban berhasil disimpan!`);
+        }
+
+        // TEACHER DASHBOARD LOGIC
+        function renderTeacherLockList() {
+            const container = document.getElementById('teacher-topic-lock-list');
+            if (!container) return;
+
+            container.innerHTML = curriculumData.map(c => `
+                <div class="flex justify-between items-center p-2.5 bg-slate-900 rounded-xl border border-slate-800">
+                    <div>
+                        <span class="font-bold text-white text-xs">${c.title}</span>
+                        <div class="text-[10px] text-slate-400 uppercase font-mono">${c.levelLabel}</div>
+                    </div>
+                    <input type="checkbox" ${appState.topicLocks[c.id] ? '' : 'checked'} onchange="toggleTopicLock(${c.id})" class="accent-amber-400 w-4 h-4 cursor-pointer">
+                </div>
+            `).join('');
+        }
+
+        function toggleTopicLock(id) {
+            appState.topicLocks[id] = !appState.topicLocks[id];
+            saveStateToStorage();
+            renderTeacherLockList();
+        }
+
+        function toggleAllTopics() {
+            const allLocked = Object.values(appState.topicLocks).every(v => v);
+            curriculumData.forEach(c => {
+                appState.topicLocks[c.id] = !allLocked;
+            });
+            saveStateToStorage();
+            renderTeacherLockList();
+            showNotice("Status Akses Berubah", allLocked ? "Semua topik berhasil dibuka." : "Semua topik berhasil dikunci.");
+        }
+
+        function renderTeacherGrades() {
+            const container = document.getElementById('teacher-grade-table');
+            if (!container) return;
+
+            container.innerHTML = appState.submittedProjects.map(p => `
+                <tr>
+                    <td class="p-2 font-bold text-white">${p.studentName}</td>
+                    <td class="p-2 font-mono text-sky-400">${appState.quizScores.pemula || 0}</td>
+                    <td class="p-2 font-mono text-amber-400">${appState.quizScores.menengah || 0}</td>
+                    <td class="p-2 font-mono text-rose-400">${appState.quizScores.lanjutan || 0}</td>
+                    <td class="p-2">
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">
+                            Terkumpul
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // CONTROL ADMIN JSON BACKUP & RESET
+        function exportSystemJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `VIDEOGRAPHY_OPEN_LAB_BACKUP_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        }
+
+        function importSystemJSON(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    appState = JSON.parse(evt.target.result);
+                    saveStateToStorage();
+                    location.reload();
+                } catch(err) {
+                    showNotice("Gagal Impor", "Berkas JSON tidak valid atau rusak.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearDemoData() {
+            appState.submittedProjects = [];
+            appState.quizScores = { pemula: 0, menengah: 0, lanjutan: 0 };
+            saveStateToStorage();
+            renderSubmittedProjects();
+            renderPortfolio();
+            renderTeacherGrades();
+            showNotice("Data Dibersihkan", "Seluruh data demo tugas dan kuis berhasil dikosongkan.");
+        }
+    </script>
+</body>
+</html>
+```eoc
+
+### Summary of Additions:
+1. **Password Authentication Modal for Control Admin**: When clicking the "Control Admin" menu (on top bar or mobile bottom bar), a password prompt opens before giving access to system controls.
+2. **Default Password**: The default password is set to `admin123`.
+3. **Change Password Feature**: Inside the Control Admin panel, admins can set and save a new custom password.
+4. **Relock Admin Session**: Added a "Kunci Kembalikan Admin" button so admins can lock the control panel once they finish maintenance tasks.
+5. **Open Access Unaffected**: All learning features (curriculum, interactive simulators, LKPD submissions, assessments, and gallery) remain 100% accessible to students and teachers without requiring any login.
